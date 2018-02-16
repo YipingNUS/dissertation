@@ -52,6 +52,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Initial Code %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage{calc}
 \RequirePackage{fontspec}
+\defaultfontfeatures{Mapping=tex-text} 
 \RequirePackage{xunicode}
 \RequirePackage{xltxtra}
 \RequirePackage{polyglossia}
@@ -61,8 +62,21 @@
 \RequirePackage{afterpage}
 \RequirePackage{ucharclasses}
 
-\setTransitionTo{Thai}{\fontspec{Garuda}}
+% Because latin font in Sarabun is Sans Serif, we prefer to use Serif font
+\newfontfamily{\thaifont}[Scale=MatchUppercase,Mapping=tex-text]{TH Sarabun New}
 
+% Set environment for Thai fonts
+\newenvironment{thailang}
+{\thaifont}
+{}
+
+% For automatic switching between languages
+\usepackage[Latin,Thai]{ucharclasses}
+
+% When using Thai characters use thailang environment
+\setTransitionTo{Thai}{\begin{thailang}}
+% For other characters, switch back to the original environment
+\setTransitionFrom{Thai}{\end{thailang}}
 
 %\newfontfamily\thaifont[BoldFont={Garuda-Bold:script=thai},
 %                 ItalicFont={Garuda-Oblique:script=thai},
@@ -70,7 +84,16 @@
 %                ]{Garuda:script=thai} 
 \setdefaultlanguage{english}
 \setotherlanguage{thai} 
-\XeTeXlinebreaklocale “th_TH” 
+
+% Set the locale for linebreak to Thai
+\XeTeXlinebreaklocale "th"
+% In English, when TeX tries to justify text,
+% it will add some spaces between words
+% For Thai, we "must not" add any space between words
+% i.e. put "zero" space between words
+\XeTeXlinebreakskip = 0pt plus 0pt
+% For a bit better(?) justified output
+\sloppy
 
 \newif\if@doctor
 \newif\if@coadvisor
